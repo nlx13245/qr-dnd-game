@@ -56,6 +56,7 @@
     }
     button:hover { background: #5568d3; transform: translateY(-2px); }
     button:active { transform: translateY(0); }
+    button:disabled { opacity: 0.6; cursor: not-allowed; }
 
     .success-message { display: none; }
     .success-message.show { display: block; }
@@ -108,7 +109,7 @@
       <div class="error" id="errorMessage"></div>
 
       <label for="playerName">Enter your name:</label>
-      <input type="text" id="playerName" placeholder="Your name" autocomplete="off" />
+      <input type="text" id="playerName" placeholder="Your name" autocomplete="off" maxlength="50" />
 
       <button id="joinBtn" type="button">Join Session</button>
 
@@ -132,7 +133,7 @@
   <script>
     const params = new URLSearchParams(window.location.search);
     const sessionParamRaw = params.get("session");
-    const sessionParam = sessionParamRaw ? sessionParamRaw.toUpperCase() : "";
+    const sessionParam = sessionParamRaw ? sessionParamRaw.trim().toUpperCase() : "";
 
     const errorEl = document.getElementById("errorMessage");
     const hintEl = document.getElementById("hintText");
@@ -153,6 +154,9 @@
         return;
       }
 
+      // Disable button during submit to prevent double-clicks
+      joinBtn.disabled = true;
+
       // Save to localStorage (prototype only)
       localStorage.setItem("sessionId", sessionParam);
       localStorage.setItem("playerName", playerName);
@@ -165,7 +169,7 @@
     }
 
     window.addEventListener("load", () => {
-      // If opened without session param, show helpful hint (but don't “break” the page)
+      // If opened without session param, show helpful hint (but don't "break" the page)
       if (!sessionParam) {
         errorEl.textContent = "ℹ️ You're not in a session yet.";
         hintEl.style.display = "block";
