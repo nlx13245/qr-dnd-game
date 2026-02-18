@@ -1,52 +1,182 @@
-<!doctype html>
-<html>
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Join Session</title>
-    <style>
-      body { font-family: system-ui, sans-serif; padding: 24px; }
-      .box { padding: 14px; border: 1px solid #ddd; border-radius: 12px; max-width: 560px; }
-      input, button { font-size: 18px; padding: 10px; }
-      input { width: 100%; box-sizing: border-box; margin: 10px 0; }
-      button { width: 100%; }
-      .small { opacity: 0.8; }
-      .ok { margin-top: 12px; font-weight: 700; }
-    </style>
-  </head>
-  <body>
-    <h1>Join the Game</h1>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Join Game</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .container { text-align: center; max-width: 500px; width: 100%; }
+    h1 { color: white; font-size: 2.5rem; margin-bottom: 30px; }
+    .form-group, .success-message {
+      background: white;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+    .form-group.hidden { display: none; }
+    label {
+      display: block;
+      text-align: left;
+      font-weight: bold;
+      margin-bottom: 10px;
+      color: #333;
+      font-size: 1.1rem;
+    }
+    input {
+      width: 100%;
+      padding: 12px 15px;
+      font-size: 1rem;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      transition: border-color 0.2s;
+    }
+    input:focus { outline: none; border-color: #667eea; }
+    button {
+      width: 100%;
+      padding: 15px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      background: #667eea;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.2s;
+    }
+    button:hover { background: #5568d3; transform: translateY(-2px); }
+    button:active { transform: translateY(0); }
 
-    <div class="box">
-      <div class="small" id="info"></div>
+    .success-message { display: none; }
+    .success-message.show { display: block; }
 
-      <label for="name">Your Name</label>
-      <input id="name" placeholder="Type your name..." />
+    .success-icon { font-size: 3rem; margin-bottom: 15px; }
+    .session-code {
+      background: #f5f5f5;
+      padding: 15px;
+      border-radius: 8px;
+      font-family: "Courier New", monospace;
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #51cf66;
+      margin: 15px 0;
+      letter-spacing: 2px;
+    }
+    .player-name {
+      background: #f5f5f5;
+      padding: 15px;
+      border-radius: 8px;
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: #667eea;
+      margin: 15px 0;
+    }
 
-      <button id="joinBtn">Join</button>
+    .back-link {
+      display: inline-block;
+      margin-top: 30px;
+      color: white;
+      text-decoration: none;
+      font-size: 1rem;
+    }
+    .back-link:hover { text-decoration: underline; }
+    .error { color: #ff6b6b; font-size: 0.95rem; margin-bottom: 15px; }
+    .hint { color: #666; font-size: 0.95rem; margin-top: 10px; line-height: 1.35; }
 
-      <div id="status" class="ok"></div>
+    @media (max-width: 600px) {
+      h1 { font-size: 1.8rem; }
+      .form-group, .success-message { padding: 20px; }
+      input { font-size: 16px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>👤 Join Game</h1>
+
+    <div class="form-group" id="formGroup">
+      <div class="error" id="errorMessage"></div>
+
+      <label for="playerName">Enter your name:</label>
+      <input type="text" id="playerName" placeholder="Your name" autocomplete="off" />
+
+      <button id="joinBtn" type="button">Join Session</button>
+
+      <div class="hint" id="hintText" style="display:none;">
+        Open the DM screen and scan the QR code to join a session.
+      </div>
     </div>
 
-    <script>
-      const params = new URLSearchParams(window.location.search);
-      const session = params.get("session") || "UNKNOWN";
-      document.getElementById("info").textContent = `Session: ${session}`;
+    <div class="success-message" id="successMessage">
+      <div class="success-icon">✅</div>
+      <p style="font-size: 1.1rem; color: #333; margin-bottom: 10px;">You have joined!</p>
+      <div class="session-code" id="displayCode"></div>
+      <p style="color: #666;">as</p>
+      <div class="player-name" id="displayName"></div>
+    </div>
 
-      document.getElementById("joinBtn").addEventListener("click", () => {
-        const name = document.getElementById("name").value.trim();
-        if (!name) {
-          document.getElementById("status").textContent = "Please enter a name.";
-          return;
-        }
+    <!-- IMPORTANT for GitHub Pages project sites: use a relative link -->
+    <a href="../" class="back-link">← Back to Home</a>
+  </div>
 
-        // Prototype-only: save locally on the player's phone
-        localStorage.setItem("playerName", name);
-        localStorage.setItem("sessionId", session);
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const sessionParamRaw = params.get("session");
+    const sessionParam = sessionParamRaw ? sessionParamRaw.toUpperCase() : "";
 
-        document.getElementById("status").textContent =
-          `✅ Joined session ${session} as ${name}`;
-      });
-    </script>
-  </body>
+    const errorEl = document.getElementById("errorMessage");
+    const hintEl = document.getElementById("hintText");
+    const nameEl = document.getElementById("playerName");
+    const joinBtn = document.getElementById("joinBtn");
+
+    function joinGame() {
+      const playerName = nameEl.value.trim();
+
+      if (!sessionParam) {
+        errorEl.textContent = "❌ No session code found. Please scan the QR from the DM screen.";
+        hintEl.style.display = "block";
+        return;
+      }
+
+      if (!playerName) {
+        errorEl.textContent = "Please enter your name!";
+        return;
+      }
+
+      // Save to localStorage (prototype only)
+      localStorage.setItem("sessionId", sessionParam);
+      localStorage.setItem("playerName", playerName);
+
+      // Show success message
+      document.getElementById("displayCode").textContent = sessionParam;
+      document.getElementById("displayName").textContent = playerName;
+      document.getElementById("formGroup").classList.add("hidden");
+      document.getElementById("successMessage").classList.add("show");
+    }
+
+    window.addEventListener("load", () => {
+      // If opened without session param, show helpful hint (but don't “break” the page)
+      if (!sessionParam) {
+        errorEl.textContent = "ℹ️ You're not in a session yet.";
+        hintEl.style.display = "block";
+      }
+      nameEl.focus();
+    });
+
+    joinBtn.addEventListener("click", joinGame);
+    nameEl.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") joinGame();
+    });
+  </script>
+</body>
 </html>
