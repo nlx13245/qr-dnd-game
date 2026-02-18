@@ -1,0 +1,19 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>QR DnD Demo</title>
+    <style>
+      body { font-family: system-ui, sans-serif; padding: 24px; }
+      a { display: inline-block; margin: 8px 0; font-size: 18px; }
+    </style>
+  </head>
+  <body>
+    <h1>QR DnD Demo</h1>
+    <p>Open the DM screen on your TV/PC:</p>
+    <a href="/dm/">Go to DM Screen</a>
+
+    <p class="small">Players should join by scanning the QR from the DM screen.</p>
+  </body>
+</html>

@@ -1,0 +1,60 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>DM Screen</title>
+    <style>
+      body { font-family: system-ui, sans-serif; padding: 24px; }
+      #qr { width: 280px; height: 280px; margin-top: 16px; }
+      .code { font-size: 28px; letter-spacing: 3px; font-weight: 700; }
+      .box { padding: 14px; border: 1px solid #ddd; border-radius: 12px; max-width: 560px; }
+      .hint { opacity: 0.8; margin-top: 10px; }
+      button { font-size: 16px; padding: 10px 12px; margin-top: 12px; }
+    </style>
+  </head>
+  <body>
+    <h1>DM Screen</h1>
+
+    <div class="box">
+      <div>Session Code:</div>
+      <div id="session" class="code">------</div>
+
+      <button id="newSessionBtn">Generate New Session</button>
+
+      <div class="hint">
+        Players scan the QR to open the Join page on their phones.
+      </div>
+
+      <div id="qr"></div>
+
+      <div class="hint" id="joinUrlText"></div>
+    </div>
+
+    <!-- QR code library -->
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+
+    <script>
+      function makeSessionId() {
+        return Math.random().toString(36).slice(2, 8).toUpperCase();
+      }
+
+      function render() {
+        const sessionId = makeSessionId();
+        document.getElementById("session").textContent = sessionId;
+
+        const baseUrl = window.location.origin; // your Netlify domain
+        const joinUrl = `${baseUrl}/join/?session=${encodeURIComponent(sessionId)}`;
+
+        document.getElementById("joinUrlText").textContent = `Join link: ${joinUrl}`;
+
+        const qrEl = document.getElementById("qr");
+        qrEl.innerHTML = ""; // clear old QR
+        new QRCode(qrEl, { text: joinUrl, width: 280, height: 280 });
+      }
+
+      document.getElementById("newSessionBtn").addEventListener("click", render);
+      render();
+    </script>
+  </body>
+</html>
