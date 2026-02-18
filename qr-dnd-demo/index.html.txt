@@ -5,14 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>QR DnD Demo</title>
     <style>
-      body { font-family: system-ui, sans-serif; padding: 24px; }
-      a { display: inline-block; margin: 8px 0; font-size: 18px; }
+      body { font-family: system-ui, sans-serif; padding: 24px; line-height: 1.6; }
+      a { display: inline-block; margin: 8px 0; font-size: 18px; color: #0066cc; text-decoration: none; }
+      a:hover { text-decoration: underline; }
+      .small { font-size: 14px; opacity: 0.7; margin-top: 16px; }
     </style>
   </head>
   <body>
     <h1>QR DnD Demo</h1>
     <p>Open the DM screen on your TV/PC:</p>
-    <a href="/dm/">Go to DM Screen</a>
+    <a href="dm/">Go to DM Screen</a>
 
     <p class="small">Players should join by scanning the QR from the DM screen.</p>
   </body>
