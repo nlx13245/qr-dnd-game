@@ -39,19 +39,16 @@
         return Math.random().toString(36).slice(2, 8).toUpperCase();
       }
 
-      // This makes the base URL correct on:
-      // - GitHub Pages project sites: https://name.github.io/repo/
-      // - normal domains: https://example.com/
+      // Robust base URL detection for GitHub Pages and custom domains
       function getSiteBaseUrl() {
         const { origin, pathname } = window.location;
+        const parts = pathname.split("/").filter(Boolean);
 
-        // If you're on ".../dm/" then base is everything before "dm/"
-        // Example: pathname "/qr-dnd-game/dm/" -> base "/qr-dnd-game/"
-        const parts = pathname.split("/").filter(Boolean); // remove empty segments
-        if (parts.length >= 1) {
-          // remove last segment ("dm")
+        // If the last part is "dm", we're in /dm/ → remove it
+        if (parts[parts.length - 1] === "dm") {
           parts.pop();
         }
+
         const basePath = "/" + (parts.length ? parts.join("/") + "/" : "");
         return origin + basePath;
       }
